@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="redirect_form">
+        <form t-att-action="api_url" method="post">
+            <input type="hidden" name="merchant_id"     t-att-value="merchant_id"/>
+            <input type="hidden" name="merchant_key"    t-att-value="merchant_key"/>
+            <input type="hidden" name="return_url"      t-att-value="return_url"/>
+            <input type="hidden" name="cancel_url"      t-att-value="cancel_url"/>
+            <input type="hidden" name="notify_url"      t-att-value="notify_url"/>
+            <input type="hidden" name="name_first"      t-att-value="name_first"/>
+            <input type="hidden" name="name_last"       t-att-value="name_last"/>
+            <input type="hidden" name="email_address"   t-att-value="email_address"/>
+            <input type="hidden" name="m_payment_id"    t-att-value="m_payment_id"/>
+            <input type="hidden" name="amount"          t-att-value="amount"/>
+            <input type="hidden" name="item_name"       t-att-value="item_name"/>
+            <input type="hidden" name="item_description" t-att-value="item_description"/>
+            <input type="hidden" name="custom_int1"     t-att-value="custom_int1"/>
+            <input type="hidden" name="custom_str1"     t-att-value="custom_str1"/>
+            <input type="hidden" name="signature"       t-att-value="signature"/>
+        </form>
+    </template>
+
+</odoo>

@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
 from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
-import logging
+
 _logger = logging.getLogger(__name__)
+
 
 class ReportStatementCommonInherit(models.AbstractModel):
     _inherit = 'statement.common'
     _description = 'Statement Reports Common Extended'
 
-
-
     @api.model
     def _get_report_values(self, docids, data=None):
-        ap_record = self.env['activity.statement.record'].search([('company_id', '=', data["company_id"]), ('is_sent', '=', False), ('partner_ids', 'in', data["partner_ids"])], limit=1)
-        _logger.info('self.env.context-----+++++' + str(self.env.context))
-        _logger.info('ap_record-----+++++' + str(ap_record))
-        _logger.info('docids-----+++++' + str(data))
+        ap_record = self.env['activity.statement.record'].search([
+            ('company_id', '=', data["company_id"]),
+            ('is_sent', '=', False),
+            ('partner_ids', 'in', data["partner_ids"]),
+        ], limit=1)
         company_id = data["company_id"]
         partner_ids = data["partner_ids"]
         if ap_record:
             date_start = ap_record.date_start
-            data.update({'date_start' : date_start})
-            _logger.info('self.env.context.get' + str(self.env.context.get('date_start')))
+            data.update({'date_start': date_start})
         else:
             date_start = data.get("date_start")
         if date_start and isinstance(date_start, str):
@@ -33,8 +33,7 @@ class ReportStatementCommonInherit(models.AbstractModel):
             ).date()
         date_end = data["date_end"]
         if ap_record:
-            data.update({'date_end' : ap_record.date_end})
-            _logger.info('self.env.context.get.end' + str(self.env.context.get('date_end')))
+            data.update({'date_end': ap_record.date_end})
             date_end = ap_record.date_end
         else:
             date_end = data.get("date_end")
@@ -47,9 +46,7 @@ class ReportStatementCommonInherit(models.AbstractModel):
         today = fields.Date.today()
         amount_field = data.get("amount_field", "amount")
 
-        # There should be relatively few of these, so to speed performance
-        # we cache them - default needed if partner lang not set
-        self._cr.execute(
+        self.env.cr.execute(
             """
             SELECT p.id, l.date_format
             FROM res_partner p LEFT JOIN res_lang l ON p.lang=l.code
@@ -57,12 +54,11 @@ class ReportStatementCommonInherit(models.AbstractModel):
             """,
             {"partner_ids": tuple(partner_ids)},
         )
-        date_formats = {r[0]: r[1] for r in self._cr.fetchall()}
+        date_formats = {r[0]: r[1] for r in self.env.cr.fetchall()}
         default_fmt = self.env["res.lang"]._lang_get(self.env.user.lang).date_format
         currencies = {x.id: x for x in self.env["res.currency"].search([])}
 
         res = {}
-        # get base data
         prior_day = date_start - timedelta(days=1) if date_start else None
         prior_lines = (
             self._get_account_display_prior_lines(
@@ -92,15 +88,11 @@ class ReportStatementCommonInherit(models.AbstractModel):
             company_id, partner_ids, date_start, account_type
         )
 
-        if 1 == 1:
-            buckets = self._get_account_show_buckets(
-                company_id, partner_ids, date_end, account_type, aging_type
-            )
-            bucket_labels = self._get_bucket_labels(date_end, aging_type)
-        else:
-            bucket_labels = {}
+        buckets = self._get_account_show_buckets(
+            company_id, partner_ids, date_end, account_type, aging_type
+        )
+        bucket_labels = self._get_bucket_labels(date_end, aging_type)
 
-        # organize and format for report
         format_date = self._format_date_to_partner_lang
         partners_to_remove = set()
         for partner_id in partner_ids:
@@ -230,17 +222,16 @@ class ReportStatementCommonInherit(models.AbstractModel):
                     )
                 )
 
-            if 1 == 1:
-                for line in buckets[partner_id]:
-                    if line["currency_id"] not in currency_dict:
-                        (
-                            currency_dict[line["currency_id"]],
-                            currencies,
-                        ) = self._get_line_currency_defaults(
-                            line["currency_id"], currencies, 0.0, 0.0
-                        )
-                    line_currency = currency_dict[line["currency_id"]]
-                    line_currency["buckets"] = line
+            for line in buckets[partner_id]:
+                if line["currency_id"] not in currency_dict:
+                    (
+                        currency_dict[line["currency_id"]],
+                        currencies,
+                    ) = self._get_line_currency_defaults(
+                        line["currency_id"], currencies, 0.0, 0.0
+                    )
+                line_currency = currency_dict[line["currency_id"]]
+                line_currency["buckets"] = line
 
             if len(partner_ids) > 1:
                 values = currency_dict.values()
@@ -271,13 +262,9 @@ class ReportStatementCommonInherit(models.AbstractModel):
             "get_inv_addr": self._get_invoice_address,
         }
 
-
-
-
-    
     def _show_buckets_sql_q2(self, date_end, minus_30, minus_60, minus_90, minus_120):
         return str(
-            self._cr.mogrify(
+            self.env.cr.mogrify(
                 """
             SELECT partner_id, currency_id, date_maturity, open_due,
                 open_due_currency, move_id,invoice_date, company_id,date,
@@ -344,7 +331,7 @@ class ReportStatementCommonInherit(models.AbstractModel):
 
     def _show_buckets_sql_q1(self, partners, date_end, account_type):
         return str(
-            self._cr.mogrify(
+            self.env.cr.mogrify(
                 """
                 WITH Q1 AS (
                     SELECT l.partner_id, l.currency_id, l.company_id, l.move_id,

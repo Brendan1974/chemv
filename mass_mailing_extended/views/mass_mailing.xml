@@ -1,12 +1,11 @@
 <odoo>
-  <data>
-   <record id="view_mass_mailing_extended_ap" model="ir.ui.view">
+    <record id="view_mass_mailing_extended_ap" model="ir.ui.view">
         <field name="name">view.mass.mailing.extended.ap</field>
         <field name="model">mailing.contact</field>
         <field name="inherit_id" ref="mass_mailing.mailing_contact_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='title_id']" position="after">
-            	<field name="tag_ids" widget="many2many_tags" placeholder="Tags" />>
+                <field name="tag_ids" widget="many2many_tags" placeholder="Tags" />
                 <field name="cellphone"/>
                 <label for="street" string="Address"/>
                 <div class="o_address_format">
@@ -18,10 +17,9 @@
                     <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
                 </div>
             </xpath>
-           <xpath expr="//field[@name='tag_ids'][1]" position="attributes">
-                 <attribute name="invisible">1</attribute>
+            <xpath expr="//field[@name='tag_ids'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
-  </data>
 </odoo>

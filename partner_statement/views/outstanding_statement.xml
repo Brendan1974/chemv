@@ -2,25 +2,112 @@
 <!-- Copyright 2018 ForgeFlow, S.L. (https://www.forgeflow.com)
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
+    <template id="outstanding_balance">
+        <p>
+            <span
+                t-out="get_title(o, account_type=account_type, line_type=line_type, ending_date=ending_date, currency=display_currency.name)"
+            />
+        </p>
+        <table class="table table-sm table-statement">
+            <thead>
+                <tr>
+                    <th>Reference number</th>
+                    <th>Date</th>
+                    <th>Due Date</th>
+                    <th>Description</th>
+                    <th class="amount">Original</th>
+                    <th class="amount">Open Amount</th>
+                    <th class="amount">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="currency[line_type]" t-as="line" t-att-class="''">
+                    <td>
+                        <span t-out="line['move_id']" />
+                    </td>
+                    <td>
+                        <span t-out="line['date']" />
+                    </td>
+                    <td>
+                        <span t-out="line['date_maturity']" />
+                    </td>
+                    <td>
+                        <t t-if="line['name'] != '/'">
+                            <t t-if="not line['ref']">
+                                <span t-out="line['name']" />
+                            </t>
+                            <t t-if="line['ref'] and not line['name']">
+                                <span t-out="line['ref']" />
+                            </t>
+                            <t t-if="line['ref'] and line['name']">
+                                <t
+                                    t-if="line['name'] not in line['ref'] or line['name'] == line['ref']"
+                                >
+                                    <span t-out="line['name']" />
+                                </t>
+                                <t t-if="line['ref'] not in line['name']">
+                                    <span t-out="line['ref']" />
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="line['name'] == '/'">
+                            <span t-out="line['ref']" />
+                        </t>
+                    </td>
+                    <td class="amount">
+                        <span
+                            t-out="line['amount']"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                    <td class="amount">
+                        <span
+                            t-out="line['open_amount']"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                    <td class="amount">
+                        <span
+                            t-out="line['balance']"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td />
+                    <td>
+                        <span t-out="ending_date" />
+                    </td>
+                    <td colspan="4">Ending Balance</td>
+                    <td class="amount">
+                        <span
+                            t-out="ending_amount"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
     <template id="partner_statement.outstanding_statement_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context({'lang': lang})" />
             <t t-set="address">
                 <address
-                    t-esc="get_inv_addr(o)"
+                    t-out="get_inv_addr(o)"
                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
                 />
                 <div t-if="o.vat" class="mt16"><t
-                        t-esc="company.country_id.vat_label or 'Tax ID'"
-                    />: <span t-field="o.vat" /></div>
+                    t-out="company.country_id.vat_label or 'Tax ID'"
+                />: <span t-field="o.vat" /></div>
             </t>
             <div class="page">
-                <div class="oe_structure" />
+                <div id="oe_structure" class="oe_structure" />
                 <h2>Statement of Account</h2>
                 <div id="informations" class="row mt32 mb32">
                     <div class="col-3 bm-2">
                         <strong>Date:</strong>
-                        <p t-esc="d['today']" class="m-0" />
+                        <p t-out="d['today']" class="m-0" />
                     </div>
                     <div class="col-3 bm-2">
                         <strong>Partner Name:</strong>
@@ -36,104 +123,13 @@
                     <t t-foreach="d['currencies'].items()" t-as="currency">
                         <t t-set="display_currency" t-value="Currencies[currency[0]]" />
                         <t t-set="currency" t-value="currency[1]" />
-                        <p>
-                                <span
-                                t-esc="'' if  account_type == 'receivable' else 'Supplier '"
-                            />Statement up to <span t-esc="d['end']" /> in <span
-                                t-esc="display_currency.name"
-                            />
-                            </p>
-                        <table class="table table-sm table-statement">
-                            <thead>
-                                <tr>
-                                    <th>Reference number</th>
-                                    <th>Date</th>
-                                    <th>Due Date</th>
-                                    <th>Description</th>
-                                    <th class="amount">Original</th>
-                                    <th class="amount">Open Amount</th>
-                                    <th class="amount">Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    t-foreach="currency['lines']"
-                                    t-as="line"
-                                    t-att-class="'statement-blocked' if line['blocked'] else ''"
-                                >
-                                    <td>
-                                        <span t-esc="line['move_id']" />
-                                    </td>
-                                    <td>
-                                        <span t-esc="line['date']" />
-                                    </td>
-                                    <td>
-                                        <span t-esc="line['date_maturity']" />
-                                    </td>
-                                    <td>
-                                        <t t-if="line['name'] != '/'">
-                                            <t t-if="not line['ref']">
-                                                <span t-esc="line['name']" />
-                                            </t>
-                                            <t t-if="line['ref'] and not line['name']">
-                                                <span t-esc="line['ref']" />
-                                            </t>
-                                            <t t-if="line['ref'] and line['name']">
-                                                <t
-                                                    t-if="line['name'] not in line['ref'] or line['name'] == line['ref']"
-                                                >
-                                                    <span t-esc="line['name']" />
-                                                </t>
-                                                <t
-                                                    t-if="line['ref'] not in line['name']"
-                                                >
-                                                    <span t-esc="line['ref']" />
-                                                </t>
-                                            </t>
-                                        </t>
-                                        <t t-if="line['name'] == '/'">
-                                            <span t-esc="line['ref']" />
-                                        </t>
-                                    </td>
-                                    <td class="amount">
-                                        <span
-                                            t-esc="line['amount']"
-                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
-                                        />
-                                    </td>
-                                    <td class="amount">
-                                        <span
-                                            t-esc="line['open_amount']"
-                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
-                                        />
-                                    </td>
-                                    <td class="amount">
-                                        <span
-                                            t-esc="line['balance']"
-                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td />
-                                    <td>
-                                        <span t-esc="d['end']" />
-                                    </td>
-                                    <td>
-                                            Ending Balance
-                                        </td>
-                                    <td />
-                                    <td />
-                                    <td />
-                                    <td class="amount">
-                                        <span
-                                            t-esc="currency['amount_due']"
-                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <t t-set="line_type" t-value="'lines'" />
+                        <t t-set="ending_amount" t-value="currency['amount_due']" />
+                        <t t-set="ending_date" t-value="d['end']" />
+                        <t
+                            t-call="partner_statement.outstanding_balance"
+                            name="outstanding"
+                        />
                         <t
                             t-call="partner_statement.aging_buckets"
                             t-if="currency['buckets']"
@@ -180,20 +176,21 @@
         <field name="report_file">report_outstanding_statement</field>
     </record>
 
+    <!-- chemv customisation ported from v16 -->
     <record id="email_template_outstanding_statement_ap" model="mail.template">
-            <field name="name">Outstanding Satement</field>
-            <field name="email_from">odoo@chemvulc.co.za</field>
-            <field name="subject">Please find your outstanding statement attached</field>
-            <field name="model_id" ref="base.model_res_partner" />
-            <field name="auto_delete" eval="True" />
-            <field name="body_html" type="html">
-                <p>Dear <t t-out="object.name or ''"></t> ,<br/><br/>
-                We apologise for taking so long to get our statements out to you.We have moved to a new system and are working on getting it set up for our needs.<br/><br/>
-                Please find attached statement for this month.Please note all September invoices are due at the end of this month.
-                You may have already seen an email from us with all your open invoices attached.
-                Please feel free to contact us with your queries, we will be happy to assist you.<br/><br/>
-                Please also feel free to request invoices from our previous system, should you need a copy. 
-                Our Branch Admins are also available to assist with any queries.<br/><br/>Thank you for your patience!</p>
-            </field>
-        </record>
+        <field name="name">Outstanding Statement</field>
+        <field name="email_from">odoo@chemvulc.co.za</field>
+        <field name="subject">Please find your outstanding statement attached</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+            <p>Dear <t t-out="object.name or ''"></t>,<br/><br/>
+            We apologise for taking so long to get our statements out to you. We have moved to a new system and are working on getting it set up for our needs.<br/><br/>
+            Please find attached statement for this month. Please note all September invoices are due at the end of this month.
+            You may have already seen an email from us with all your open invoices attached.
+            Please feel free to contact us with your queries, we will be happy to assist you.<br/><br/>
+            Please also feel free to request invoices from our previous system, should you need a copy.
+            Our Branch Admins are also available to assist with any queries.<br/><br/>Thank you for your patience!</p>
+        </field>
+    </record>
 </odoo>
