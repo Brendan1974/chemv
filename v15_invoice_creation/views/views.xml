@@ -6,11 +6,9 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form" />
             <field name="arch" type="xml">
-                <button name="action_post" position="attributes">
-                    <attribute name="groups">
-                        account.group_account_invoice,v15_invoice_creation.sale_invoice_creation
-                    </attribute>
-                </button>
+                <xpath expr="//button[@name='action_post']" position="attributes">
+                    <attribute name="groups">account.group_account_invoice,v15_invoice_creation.sale_invoice_creation</attribute>
+                </xpath>
             </field>
         </record>
     </data>

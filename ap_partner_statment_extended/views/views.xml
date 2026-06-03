@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-     <record id="activitys_statement_wizard_view" model="ir.ui.view">
+    <record id="activitys_statement_wizard_view" model="ir.ui.view">
         <field name="name">Activitys Statement Wizard</field>
         <field name="model">activity.statement.wizard</field>
-        <field name="inherit_id" ref="partner_statement.activity_statement_wizard_view" />
+        <field name="inherit_id" ref="partner_statement.activity_statement_wizard_view"/>
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <xpath expr="//footer" position="inside">

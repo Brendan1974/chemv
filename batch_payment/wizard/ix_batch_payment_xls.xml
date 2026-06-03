@@ -1,70 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
+    <data>
 
-		<record model="ir.ui.view"
-			id="view_batch_payment_xls_report_vendor">
-			<field name="name">view.batch.report.ap.vendor</field>
-			<field name="model">ix.batch.payment.vendor.report</field>
-			<field name="type">form</field>
-			<field name="priority">0</field>
-			<field name="arch" type="xml">
-				<form string="Export Xls Report">
-					<group>
-						<group>
-							<field name="start_date" required="1" />
-							<field name="file_name" invisible="1" />
-							<field name="exported" invisible="1" />
-							<field name="file" readonly="1" filename="file_name"
-								nolabel="1" attrs="{'invisible':[('exported','=',False)]}" />
-						</group>
-						<group>
-							<field name="end_date" required="1" />
-						</group>
-					</group>
-					<footer>
-						<button class="oe_highlight" type="object"
-							name="print_batch_payment_vendor_wizard"
-							string="Print Batch Payment Report" />
-						<button class="oe_link" special="cancel" string="Cancel" />
-					</footer>
-				</form>
-			</field>
-		</record>
+        <record model="ir.ui.view" id="view_batch_payment_xls_report_vendor">
+            <field name="name">view.batch.report.ap.vendor</field>
+            <field name="model">ix.batch.payment.vendor.report</field>
+            <field name="type">form</field>
+            <field name="priority">0</field>
+            <field name="arch" type="xml">
+                <form string="Export Xls Report">
+                    <group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="file_name" invisible="1"/>
+                            <field name="exported" invisible="1"/>
+                            <field name="file" readonly="1" filename="file_name"
+                                   nolabel="1" invisible="not exported"/>
+                        </group>
+                        <group>
+                            <field name="end_date" required="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button class="oe_highlight" type="object"
+                                name="print_batch_payment_vendor_wizard"
+                                string="Print Batch Payment Report"/>
+                        <button class="oe_link" special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
 
+        <record model="ir.actions.act_window" id="action_batch_payment_vendor_report">
+            <field name="name">Expense XLS</field>
+            <field name="res_model">ix.batch.payment.vendor.report</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_batch_payment_xls_report_vendor"/>
+            <field name="target">new</field>
+        </record>
 
-		<record model="ir.actions.act_window"
-			id="action_batch_payment_vendor_report">
-			<field name="name">Expense XLS</field>
-			<field name="res_model">ix.batch.payment.vendor.report</field>
-			<!-- <field name="view_type">form</field> -->
-			<field name="view_mode">form</field>
-			<field name="view_id"
-				ref="view_batch_payment_xls_report_vendor" />
-			<field name="target">new</field>
-		</record>
+        <record model="ir.ui.view" id="view_batch_payment_csv">
+            <field name="name">view.batch.payment.csv.wizrd</field>
+            <field name="model">batch.payment.csv.wizrd</field>
+            <field name="type">form</field>
+            <field name="priority">0</field>
+            <field name="arch" type="xml">
+                <form string="Export Xls Report">
+                    <group>
+                        <group>
+                            <field name="exported" invisible="1"/>
+                            <field name="file_name" invisible="1"/>
+                            <field name="file" readonly="1" filename="file_name"
+                                   nolabel="1" invisible="not exported"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button class="oe_link" special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
 
-		<record model="ir.ui.view" id="view_batch_payment_csv">
-			<field name="name">view.batch.payment.csv.wizrd</field>
-			<field name="model">batch.payment.csv.wizrd</field>
-			<field name="type">form</field>
-			<field name="priority">0</field>
-			<field name="arch" type="xml">
-				<form string="Export Xls Report">
-					<group>
-						<group>
-							<field name="exported" invisible="1" />
-							<field name="file_name" invisible="1" />
-							<field name="file" readonly="1" filename="file_name"
-								nolabel="1" attrs="{'invisible':[('exported','=',False)]}" />
-						</group>
-					</group>
-					<footer>
-						<button class="oe_link" special="cancel" string="Cancel" />
-					</footer>
-				</form>
-			</field>
-		</record>
-		
-	</data>
+    </data>
 </odoo>

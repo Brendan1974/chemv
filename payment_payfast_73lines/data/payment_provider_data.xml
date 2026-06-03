@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="payment_provider_payfast_73lines" model="payment.provider">
+        <field name="name">PayFast</field>
+        <field name="code">payfast_73lines</field>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="image_128" type="base64"
+               file="payment_payfast_73lines/static/src/img/payfast_73lines_icon.png"/>
+        <field name="module_id" ref="base.module_payment_payfast_73lines"/>
+        <field name="payment_method_ids"
+               eval="[Command.set([ref('payment.payment_method_card')])]"/>
+    </record>
+
+</odoo>

@@ -1,7 +1,8 @@
 # Copyright 2018 ForgeFlow, S.L. (https://www.forgeflow.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import api, models
+from odoo import _, api, models
+from odoo.tools.float_utils import float_is_zero
 
 
 class OutstandingStatement(models.AbstractModel):
@@ -11,13 +12,29 @@ class OutstandingStatement(models.AbstractModel):
     _name = "report.partner_statement.outstanding_statement"
     _description = "Partner Outstanding Statement"
 
-    def _display_lines_sql_q1(self, partners, date_end, account_type):
+    def _get_title(self, partner, **kwargs):
+        kwargs["context"] = {
+            "lang": partner.lang,
+        }
+        if kwargs.get("account_type") == "receivable":
+            title = _("Statement up to %(ending_date)s in %(currency)s", **kwargs)
+        else:
+            title = _(
+                "Supplier Statement up to %(ending_date)s in %(currency)s", **kwargs
+            )
+        return title
+
+    def _display_outstanding_lines_sql_q1(self, partners, date_end, account_type):
         partners = tuple(partners)
+        excluded_accounts_ids = tuple(
+            self.env.context.get("excluded_accounts_ids", [])
+        ) or (-1,)
+        show_only_overdue = self.env.context.get("show_only_overdue", False)
         return str(
             self._cr.mogrify(
                 """
-            SELECT l.id, m.name AS move_id, l.partner_parent_id, l.date, l.name,
-                            l.blocked, l.currency_id, l.company_id,
+            SELECT l.id, m.name AS move_id, l.partner_parent_id AS partner_id, l.date, l.name,
+                l.currency_id, l.company_id,
             CASE WHEN l.ref IS NOT NULL
                 THEN l.ref
                 ELSE m.ref
@@ -44,7 +61,6 @@ class OutstandingStatement(models.AbstractModel):
             END as date_maturity
             FROM account_move_line l
             JOIN account_account aa ON (aa.id = l.account_id)
-            -- JOIN account_account_type at ON (at.id = aa.user_type_id)
             JOIN account_move m ON (l.move_id = m.id)
             LEFT JOIN (SELECT pr.*
                 FROM account_partial_reconcile pr
@@ -58,56 +74,63 @@ class OutstandingStatement(models.AbstractModel):
                 ON pr.debit_move_id = l2.id
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
-            WHERE l.partner_parent_id IN %(partners)s AND aa.account_type = %(account_type)s
-                                AND (
-                                  (pd.id IS NOT NULL AND
-                                      pd.max_date <= %(date_end)s) OR
-                                  (pc.id IS NOT NULL AND
-                                      pc.max_date <= %(date_end)s) OR
-                                  (pd.id IS NULL AND pc.id IS NULL)
-                                ) AND l.date <= %(date_end)s AND m.state IN ('posted')
+            WHERE l.partner_parent_id IN %(partners)s
+                AND aa.id not in %(excluded_accounts_ids)s
+                AND (
+                    (pd.id IS NOT NULL AND
+                        pd.max_date <= %(date_end)s) OR
+                    (pc.id IS NOT NULL AND
+                        pc.max_date <= %(date_end)s) OR
+                    (pd.id IS NULL AND pc.id IS NULL)
+                ) AND l.date <= %(date_end)s AND m.state IN ('posted')
+                AND aa.account_type = %(account_type)s
+                AND CASE
+                    WHEN %(show_only_overdue)s
+                    THEN COALESCE(l.date_maturity, l.date) <= %(date_end)s
+                    ELSE TRUE
+                END
             GROUP BY l.id, l.partner_parent_id, m.name, l.date, l.date_maturity, l.name,
                 CASE WHEN l.ref IS NOT NULL
                     THEN l.ref
                     ELSE m.ref
                 END,
-                l.blocked, l.currency_id, l.balance, l.amount_currency, l.company_id
+                l.currency_id, l.balance, l.amount_currency, l.company_id
             """,
                 locals(),
             ),
             "utf-8",
         )
 
-    def _display_lines_sql_q2(self):
+    def _display_outstanding_lines_sql_q2(self, sub):
         return str(
             self._cr.mogrify(
-                """
-                SELECT Q1.partner_parent_id, Q1.currency_id, Q1.move_id,
-                    Q1.date, Q1.date_maturity, Q1.debit, Q1.credit,
-                    Q1.name, Q1.ref, Q1.blocked, Q1.company_id,
-                CASE WHEN Q1.currency_id is not null
-                    THEN Q1.open_amount_currency
-                    ELSE Q1.open_amount
-                END as open_amount
-                FROM Q1
+                f"""
+                SELECT {sub}.partner_id, {sub}.currency_id, {sub}.move_id,
+                    {sub}.date, {sub}.date_maturity, {sub}.debit, {sub}.credit,
+                    {sub}.name, {sub}.ref, {sub}.company_id,
+                    CASE WHEN {sub}.currency_id is not null
+                        THEN {sub}.open_amount_currency
+                        ELSE {sub}.open_amount
+                    END as open_amount, {sub}.id
+                FROM {sub}
                 """,
                 locals(),
             ),
             "utf-8",
         )
 
-    def _display_lines_sql_q3(self, company_id):
+    def _display_outstanding_lines_sql_q3(self, sub, company_id):
         return str(
             self._cr.mogrify(
-                """
-            SELECT Q2.partner_parent_id, Q2.move_id, Q2.date, Q2.date_maturity,
-              Q2.name, Q2.ref, Q2.debit, Q2.credit,
-              Q2.debit-Q2.credit AS amount, blocked,
-              COALESCE(Q2.currency_id, c.currency_id) AS currency_id,
-              Q2.open_amount
-            FROM Q2
-            JOIN res_company c ON (c.id = Q2.company_id)
-            WHERE c.id = %(company_id)s AND Q2.open_amount != 0.0
+                f"""
+            SELECT {sub}.partner_id, {sub}.move_id, {sub}.date,
+                {sub}.date_maturity, {sub}.name, {sub}.ref, {sub}.debit,
+                {sub}.credit, {sub}.debit-{sub}.credit AS amount,
+                COALESCE({sub}.currency_id, c.currency_id) AS currency_id,
+                {sub}.open_amount, {sub}.id
+            FROM {sub}
+            JOIN res_company c ON (c.id = {sub}.company_id)
+            WHERE c.id = %(company_id)s AND {sub}.open_amount != 0.0
             """,
                 locals(),
             ),
@@ -122,22 +145,29 @@ class OutstandingStatement(models.AbstractModel):
         # pylint: disable=E8103
         self.env.cr.execute(
             """
-        WITH Q1 as (%s),
-             Q2 AS (%s),
-             Q3 AS (%s)
-        SELECT partner_parent_id, currency_id, move_id, date, date_maturity, debit,
-                            credit, amount, open_amount, name, ref, blocked
+        WITH Q1 as ({}),
+             Q2 AS ({}),
+             Q3 AS ({})
+        SELECT partner_id, currency_id, move_id, date, date_maturity, debit,
+            credit, amount, open_amount, COALESCE(name, '') as name,
+            COALESCE(ref, '') as ref, id
         FROM Q3
-        ORDER BY date, date_maturity, move_id"""
-            % (
-                self._display_lines_sql_q1(partners, date_end, account_type),
-                self._display_lines_sql_q2(),
-                self._display_lines_sql_q3(company_id),
+        ORDER BY date, date_maturity, move_id""".format(
+                self._display_outstanding_lines_sql_q1(
+                    partners, date_end, account_type
+                ),
+                self._display_outstanding_lines_sql_q2("Q1"),
+                self._display_outstanding_lines_sql_q3("Q2", company_id),
             )
         )
         for row in self.env.cr.dictfetchall():
-            res[row.pop("partner_parent_id")].append(row)
+            res[row.pop("partner_id")].append(row)
         return res
+
+    def _add_currency_line(self, line, currency):
+        if float_is_zero(line["open_amount"], precision_rounding=currency.rounding):
+            return []
+        return [line]
 
     @api.model
     def _get_report_values(self, docids, data=None):

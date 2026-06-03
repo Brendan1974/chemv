@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
-from odoo import _, api, fields, models
-from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
-import math
+from odoo import _, models
 
-class ap_statement_parnter(models.AbstractModel):
+
+class ApStatementPartner(models.AbstractModel):
     _inherit = "statement.common"
 
     def _get_bucket_labels_days(self, date_end):

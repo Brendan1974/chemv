@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    
+
 	<record id="sale_invoice_creation" model="res.groups">
         <field name="name">Sale Invoice Confirmation</field>
         <!-- <field name="implied_ids" eval="[(4,ref('account.group_account_manager')),(4,ref('account.group_account_invoice'))]"/> -->
     </record>
 
-    
+
 </odoo>

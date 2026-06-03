@@ -1,6 +1,6 @@
 {'name': "Debtor Import", 
         'summary': "",
-       'version': "1.7",
+       'version': "18.0.1.0.0",
        'depends': ['base','sale'],
        'author': "AP Accounting Services",
        'license': '',
