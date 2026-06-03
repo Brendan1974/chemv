@@ -1,35 +1,29 @@
 # -*- coding: utf-8 -*-
 {
     'name': "ap_partner_statment_extended",
-
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
-
+    'summary': "Extended Partner Statement with scheduled email delivery",
     'description': """
-Long description of module's purpose
+Extension of partner_statement adding:
+- Activity Statement Record model to queue statements
+- Cron to send queued statements by email
+- Email templates for activity and outstanding statements
+- 'Send by Email' button on wizards
     """,
-
     'author': "Ap Systems",
     'website': "https://ap-systems.co.za",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '16.0',
-
-    # any module necessary for this one to work correctly
+    'category': 'Accounting',
+    'version': '18.0.1.0.0',
+    'license': 'AGPL-3',
     'depends': ['partner_statement'],
-
-    # always loaded
     'data': [
         'data/mail_template.xml',
         'data/ir_cron.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
     ],
-    # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+    'installable': True,
+    'application': False,
 }
-

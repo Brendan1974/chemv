@@ -8,7 +8,7 @@ class AccountMOveInherit(models.Model):
     _inherit = "account.move"
 
     margin = fields.Monetary("Margin", compute='_compute_margin', store=False, search='_search_margin')
-    margin_percent = fields.Float("Margin (%)", compute='_compute_margin', store=False, group_operator="avg", search='_search_margin_percentage')
+    margin_percent = fields.Float("Margin (%)", compute='_compute_margin', store=False, aggregator="avg", search='_search_margin_percentage')
     
     
     
@@ -28,7 +28,7 @@ class AccountMOveInherit(models.Model):
 
         ids = []
         for move in self.search([]):
-            if OPERATORS[operator](move.margin, value):
+            if OPERATORS[operator](move.margin_percent, value):
                 ids.append(move.id)
         return [("id", "in", ids)]
 
@@ -57,13 +57,13 @@ class ap_invoice_margin(models.Model):
 
     margin = fields.Float(
         "Margin", compute='_compute_margin', search='_search_margin',
-        digits='Product Price', store=False, precompute=True)
+        digits='Product Price', store=False)
     margin_percent = fields.Float(
-        "Margin (%)", compute='_compute_margin', store=False, precompute=True, search='_search_margin_percentage')
+        "Margin (%)", compute='_compute_margin', store=False, search='_search_margin_percentage')
 
     purchase_price = fields.Float(
         string="Cost", compute="_compute_purchase_price",
-        digits='Product Price', store=False, readonly=False, copy=False, precompute=True)
+        digits='Product Price', store=False, readonly=False, copy=False)
 
     def _search_margin(self, operator, value):
         if operator not in ['=', '!=', '>', '<', '>=', '<=']:  # Ensure the operator is valid
@@ -81,7 +81,7 @@ class ap_invoice_margin(models.Model):
 
         ids = []
         for move in self.search([]):
-            if OPERATORS[operator](move.margin, value):
+            if OPERATORS[operator](move.margin_percent, value):
                 ids.append(move.id)
         return [("id", "in", ids)]
 

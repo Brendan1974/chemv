@@ -1,24 +1,21 @@
-# -*- coding: utf-8 -*-
-# Part of Odoo Module Developed by 73lines
-# See LICENSE file for full copyright and licensing details.
-
+# Part of chemv (migrated from v16 by 73lines).
 {
-    'name': 'PayFast Payment Acquirer for v15',
-    'category': 'Payment Gateway',
-    'summary': 'Payment Acquirer: PayFast Implementation',
-    'version': '15.0.0.0.2',
-    'author': '73Lines',
-    'description': """PayFast Payment Acquirer""",
+    'name': 'Payment Provider: PayFast (73lines)',
+    'version': '18.0.1.0.0',
+    'category': 'Accounting/Payment Providers',
+    'sequence': 350,
+    'summary': "South African payment gateway: redirect-form integration with PayFast.",
+    'description': " ",
+    'author': '73Lines (chemv v18 port)',
     'depends': ['payment'],
     'data': [
-        'views/payfast.xml',
-        'views/payment_acquirer.xml',
-        'data/payfast.xml',
+        'views/payment_form_templates.xml',
+        'views/payment_provider_views.xml',
+        'data/payment_provider_data.xml',
     ],
-    'images': [
-        'static/description/payfast_payment_gateway_banner.png',
-    ],
-    'price': 99.99,
-    'license': 'Other proprietary',
-    'currency': 'EUR',
+    'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
+    'license': 'OPL-1',
+    'images': ['static/description/icon.png'],
+    'installable': True,
 }

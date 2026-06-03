@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_ix_batch_payment_ap" model="ir.sequence">
+            <field name="name">Batch Payment Number</field>
+            <field name="code">ix.batch.payment.ap</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

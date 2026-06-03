@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">PayFast Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'payfast_73lines'">
+                    <field name="payfast_merchant_id"
+                           required="code == 'payfast_73lines' and state != 'disabled'"/>
+                    <field name="payfast_secret"
+                           required="code == 'payfast_73lines' and state != 'disabled'"
+                           password="True"/>
+                    <field name="payfast_passphrase" password="True"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>

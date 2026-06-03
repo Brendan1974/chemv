@@ -2,33 +2,29 @@
 {
     'name': "v15_chem_tax_invoice",
 
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+    'summary': "Show Tax Invoice title on customer invoice PDFs",
 
     'description': """
-        Long description of module's purpose
+        Customizes the customer invoice report title and keeps inventory
+        adjustments accessible with list and form views.
     """,
 
     'author': "My Company",
     'website': "http://www.yourcompany.com",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
+    'category': 'Accounting/Accounting',
+    'version': '18.0.1.0.0',
+    'license': 'LGPL-3',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base','account','stock'],
+    'depends': ['account', 'stock'],
 
-    # always loaded
     'data': [
-         
-        'views/chem_tax_invoice.xml'
+        'views/chem_tax_invoice.xml',
     ],
-    # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }
