@@ -20,7 +20,7 @@
     # any module necessary for this one to work correctly
     'depends': ['base', 'account', 'account_edi'],
 
-    # always loaded
+    # always loaded test
     'data': [
         'security/group_access.xml',
         'security/ir.model.access.csv',
@@ -35,3 +35,4 @@
     'application': False,
     'license': 'LGPL-3',
 }
+
