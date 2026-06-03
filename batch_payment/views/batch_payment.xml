@@ -1,100 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<data>
-		<record id='form_view_batch_payment_ap' model='ir.ui.view'>
-			<field name='name'>form.view.batchpayment.ap</field>
-			<field name='model'>ix.batch.payment.ap</field>
-			<field name='arch' type='xml'>
-				<form create="false">
-					<header>
-						<button string="Approve" type="object" name="btn_approved"
-							groups="account.group_account_manager" class="btn-primary"
-							attrs="{'invisible': [('state','in',['approved','rejected'])]}" />
-						<button string="Reject" type="object" name="btn_rejected"
-							attrs="{'invisible': [('state','in',['rejected'])]}"
-							groups="account.group_account_manager" class="btn-primary" />
-						<button string="Print Report" type="object"
-							name="print_batch_payment_pdf" class="btn-primary" />
-						<button string="Print XLS Report" type="object"
-							name="print_batch_payment_vendor" class="btn-primary" />
-						<button string="Batch Payment Report (XLX)" type="object"
-                            name="print_batch_payment_csv" class="btn-primary" />
-						<field name="state" widget="statusbar" />
-					</header>
-					<sheet>
-					    <label for="number"/>
-					    <h1>
-					        <field name="number" readonly="1" force_save="1"/>
-					    </h1>
-						<group>
-							<group>
-								<field name='payment_date' required="1" />
-								<field name='requested_person_id' options="{'no_open':True}"/>
-								<field name='run_date' />
-							</group>
-							<group>
-								<field name='memo' />
-								<field name='approve_person_id' options="{'no_open':True}"/>
-								<field name="company_id" readonly="1" options="{'no_open':True}"/>
-								<field name="bank_id" domain="[('is_batch_payment','=',True)]"/>
-							</group>
-							<field name='vendor_bill_ids' attrs="{'readonly': [('state','not in',['to be approved'])]}" force_save="1">
-								<tree create="false" edit="false" editable="bottom">
-									<field name="partner_id" readonly="1" force_save="1" options="{'no_open':True}"/>
-									<field name='invoice_id' readonly="1" force_save="1" options="{'no_open':True}"/>
-									<field name='number' readonly="1" force_save="1"/>
-									<field name="amount_untaxed" readonly="1" force_save="1" sum="Total"/>
-									<field name='balance_amount' readonly="1" force_save="1" sum="Total"/>
-									<field name='pay_amount' required="1" force_save="1" sum="Total"/>
-								</tree>
-							</field>
-						</group>
-						<group>
-							<group>
-								<field name="is_add" attrs="{'invisible': [('state','!=','to be approved')]}" widget="boolean_toggle"/>
-							</group>
-						</group>
-						<field name="invoice_list_ids" invisible="1" force_save="1"/>
-						<field name="invoice_ids" options="{'no_create': True, 'no_create_edit':True, 'no_open':True}" force_save="1" domain="[('move_type','=','in_invoice'),('state','=','posted'),('id','not in',invoice_list_ids),('company_id','=',company_id)]" attrs="{'invisible': ['|',('is_add','=',False),('state','!=','to be approved')]}">
-							<tree delete="false" editable="false">
-						        <field name="partner_id" groups="base.group_user" string="Vendor" options="{'no_open': True}"/>
-			                    <field name="invoice_date" string="Bill Date"/>
-			                    <field name="number"/>
-			                    <field name="ref"/>
-			                    <field name="company_id"  options="{'no_open': True}"/>
-			                    <field name="invoice_date_due"/>
-			                    <field name="invoice_origin"/>
-			                    <field name="amount_total_signed" string="Total" sum="Total"/>
-			                    <field name="amount_residual_signed" string="To Pay" sum="To pay"/>
-			                    <field name="currency_id" invisible="1"/>
-			                    <field name="state"/>
-			                    <field name="move_type" invisible="context.get('type',True)"/>
-						    </tree>
-						</field>
-					</sheet>
-				</form>
-			</field>
-		</record>
-		<record id='tree_view_batchpayment_ap' model='ir.ui.view'>
-			<field name='name'>tree.view.bachpayment_ap</field>
-			<field name='model'>ix.batch.payment.ap</field>
-			<field name='arch' type='xml'>
-				<tree>
-					<field name='payment_date' />
-					<field name='memo' />
-				</tree>
-			</field>
-		</record>
+    <data>
 
-		<record id="action_batchpayment" model="ir.actions.act_window">
-			<field name="name">Batch Payment</field>
-			<field name="res_model">ix.batch.payment.ap</field>
-			<!-- <field name="view_type">form</field> -->
-			<field name="view_mode">tree,form</field>
-			<field name="view_id" ref="tree_view_batchpayment_ap" />
-			<field name="context">{}</field>
-		</record>
-		<record id="action_batch_payment_2" model="ir.actions.act_window">
+        <record id='form_view_batch_payment_ap' model='ir.ui.view'>
+            <field name='name'>form.view.batchpayment.ap</field>
+            <field name='model'>ix.batch.payment.ap</field>
+            <field name='arch' type='xml'>
+                <form create="false">
+                    <header>
+                        <button string="Approve" type="object" name="btn_approved"
+                                groups="account.group_account_manager" class="btn-primary"
+                                invisible="state in ('approved','rejected')"/>
+                        <button string="Reject" type="object" name="btn_rejected"
+                                invisible="state == 'rejected'"
+                                groups="account.group_account_manager" class="btn-primary"/>
+                        <button string="Print Report" type="object"
+                                name="print_batch_payment_pdf" class="btn-primary"/>
+                        <button string="Print XLS Report" type="object"
+                                name="print_batch_payment_vendor" class="btn-primary"/>
+                        <button string="Batch Payment Report (XLS)" type="object"
+                                name="print_batch_payment_csv" class="btn-primary"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <label for="number"/>
+                        <h1>
+                            <field name="number" readonly="1" force_save="1"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name='payment_date' required="1"/>
+                                <field name='requested_person_id' options="{'no_open':True}"/>
+                                <field name='run_date'/>
+                            </group>
+                            <group>
+                                <field name='memo'/>
+                                <field name='approve_person_id' options="{'no_open':True}"/>
+                                <field name="company_id" readonly="1" options="{'no_open':True}"/>
+                                <field name="bank_id" domain="[('is_batch_payment','=',True)]"/>
+                            </group>
+                            <field name='vendor_bill_ids'
+                                   readonly="state != 'to be approved'"
+                                   force_save="1">
+                                <list create="false" edit="false" editable="bottom">
+                                    <field name="partner_id" readonly="1" force_save="1" options="{'no_open':True}"/>
+                                    <field name='invoice_id' readonly="1" force_save="1" options="{'no_open':True}"/>
+                                    <field name='number' readonly="1" force_save="1"/>
+                                    <field name="amount_untaxed" readonly="1" force_save="1" sum="Total"/>
+                                    <field name='balance_amount' readonly="1" force_save="1" sum="Total"/>
+                                    <field name='pay_amount' required="1" force_save="1" sum="Total"/>
+                                </list>
+                            </field>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="is_add" invisible="state != 'to be approved'" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <field name="invoice_list_ids" invisible="1" force_save="1"/>
+                        <field name="invoice_ids"
+                               options="{'no_create': True, 'no_create_edit':True, 'no_open':True}"
+                               force_save="1"
+                               domain="[('move_type','=','in_invoice'),('state','=','posted'),('id','not in',invoice_list_ids),('company_id','=',company_id)]"
+                               invisible="not is_add or state != 'to be approved'">
+                            <list delete="false">
+                                <field name="partner_id" groups="base.group_user" string="Vendor" options="{'no_open': True}"/>
+                                <field name="invoice_date" string="Bill Date"/>
+                                <field name="number"/>
+                                <field name="ref"/>
+                                <field name="company_id" options="{'no_open': True}"/>
+                                <field name="invoice_date_due"/>
+                                <field name="invoice_origin"/>
+                                <field name="amount_total_signed" string="Total" sum="Total"/>
+                                <field name="amount_residual_signed" string="To Pay" sum="To pay"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="state"/>
+                                <field name="move_type" invisible="context.get('type',True)"/>
+                            </list>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='tree_view_batchpayment_ap' model='ir.ui.view'>
+            <field name='name'>tree.view.bachpayment_ap</field>
+            <field name='model'>ix.batch.payment.ap</field>
+            <field name='arch' type='xml'>
+                <list>
+                    <field name='payment_date'/>
+                    <field name='memo'/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_batchpayment" model="ir.actions.act_window">
+            <field name="name">Batch Payment</field>
+            <field name="res_model">ix.batch.payment.ap</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="tree_view_batchpayment_ap"/>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_batch_payment_2" model="ir.actions.act_window">
             <field name="name">Batch Payment</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ix.batch.payment.ap</field>
@@ -103,69 +111,65 @@
             <field name="context">{}</field>
             <field name="target">new</field>
             <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
-            <field name="binding_model_id" ref="account.model_account_move" />
+            <field name="binding_model_id" ref="account.model_account_move"/>
             <field name="binding_view_types">list</field>
-          </record>
-		<menuitem id="menuitem_batchpayment_ap" name="Batch Payment"
-			action="action_batchpayment"
-			parent="account.menu_finance_payables" sequence="5" />	
-		
-		<record id="ap_ix_partner_view_inherit" model="ir.ui.view">
-		<field name="name">ap.ix.partner.inherited</field>
-		<field name="model">res.partner</field>
-		<field name="inherit_id" ref="base.view_partner_form" />
-		<field name="arch" type="xml">
-			<xpath expr="//notebook[last()]" position="inside">
-				<page string="Bank Details" name="bank details">
-					<group>
-						<group>
-							<field name="bank_financial_inst" />
-							<field name="branch_name_code" />
-							<field name="acc_no_ap" />
-						</group>
-						<group>
-							<field name="type_account" />
-							<field name="swift_code" />
-							<field name="tel_ph_dtls" />
-							<field name="is_approve" invisible="1" />
-						</group>
-					</group>
-					<button class="oe_highlight" type="object"
-						name="button_approve" string="Approve"
-						groups="account.group_account_manager"
-						attrs="{'invisible': [('is_approve','=',True)]}" />
-				</page>
-			</xpath>
-		</field>
-	</record>
-	
-	
-	<record id="account_journal_batch_payment" model="ir.ui.view">
-		<field name="name">account.journal.batch.payment</field>
-		<field name="model">account.journal</field>
-		<field name="inherit_id" ref="account.view_account_journal_form" />
-		<field name="arch" type="xml">
-			<xpath expr="//field[@name='type']" position='after'>
-                  <field name='is_batch_payment' />
+        </record>
+
+        <menuitem id="menuitem_batchpayment_ap" name="Batch Payment"
+                  action="action_batchpayment"
+                  parent="account.menu_finance_payables" sequence="5"/>
+
+        <record id="ap_ix_partner_view_inherit" model="ir.ui.view">
+            <field name="name">ap.ix.partner.inherited</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook[last()]" position="inside">
+                    <page string="Bank Details" name="bank_details">
+                        <group>
+                            <group>
+                                <field name="bank_financial_inst"/>
+                                <field name="branch_name_code"/>
+                                <field name="acc_no_ap"/>
+                            </group>
+                            <group>
+                                <field name="type_account"/>
+                                <field name="swift_code"/>
+                                <field name="tel_ph_dtls"/>
+                                <field name="is_approve" invisible="1"/>
+                            </group>
+                        </group>
+                        <button class="oe_highlight" type="object"
+                                name="button_approve" string="Approve"
+                                groups="account.group_account_manager"
+                                invisible="is_approve"/>
+                    </page>
                 </xpath>
-		</field>
-	</record>
-	
-	
-	<record id="res_company_batch_payment" model="ir.ui.view">
-        <field name="name">res.company.batch.payment</field>
-        <field name="model">res.company</field>
-        <field name="inherit_id" ref="base.view_company_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='currency_id']" position="after">
-                     <field name="dr_account_number" />
-                     <field name="dr_branch_number" />
-            </xpath>
-        </field>
-    </record>
-    
-    
-    
-    
-	</data>
+            </field>
+        </record>
+
+        <record id="account_journal_batch_payment" model="ir.ui.view">
+            <field name="name">account.journal.batch.payment</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position='after'>
+                    <field name='is_batch_payment'/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_company_batch_payment" model="ir.ui.view">
+            <field name="name">res.company.batch.payment</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="dr_account_number"/>
+                    <field name="dr_branch_number"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
 </odoo>

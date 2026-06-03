@@ -1,285 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<data>
-		<template id="report_ap_batch_payment_pdf">
-			<t t-call="web.html_container">
-				<t t-foreach="docs" t-as="o">
-					<t t-call="web.external_layout">
-						<style>
-							table {
-							font-family: arial, sans-serif;
-							font-size:10pt;
-							}
-							div.transbox {
-							margin: 0px;
-							background-color: #ffffff;
-							border: 1px
-							solid black;
-							height : 60px;
-							width : 110px;
-							text-align:
-							center;
-							}
-							div.transbox p {
-							margin: 0px;
-							font-weight: bold;
-							color:
-							#000000;
-							}
-							hr {
-							display: line;
-							margin-top: 0.5em;
-							margin-bottom:
-							0.5em;
-							margin-left:
-							auto;
-							margin-right: auto;
-							border-width: 3px;
-							}
-						</style>
-						<div class="page">
-							<table class="table">
-								<thead>
-									<tr style="text-align:left;background-color:#ffffff;">
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Transaction Date</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Transaction Reference</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Transaction Description</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Transaction Amount</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Approved Amount</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Paid to Date</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Discount Recieved</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Amount to be Paid</span>
-												</h5>
-											</div>
-										</td>
-										<td>
-											<div class="col-xs-1 transbox">
-												<h5>
-													<span style="font-size :10pt;">Run Date</span>
-												</h5>
-											</div>
-										</td>
-									</tr>
-								</thead>
-								<tbody>
-									<t t-set="total_grand_transaction_amount" t-value="0" />
-									<t t-set="total_grand_approved_amount" t-value="0" />
-									<t t-set="total_grand_paid_to_date" t-value="0" />
-									<t t-set="total_grand_amt_tobe_paid" t-value="0" />
-									<tr>
+    <data>
+        <template id="report_ap_batch_payment_pdf">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <style>
+                            table { font-family: arial, sans-serif; font-size:10pt; }
+                            div.transbox {
+                                margin: 0px; background-color: #ffffff;
+                                border: 1px solid black; height: 60px; width: 110px;
+                                text-align: center;
+                            }
+                            div.transbox p { margin: 0px; font-weight: bold; color: #000000; }
+                            hr {
+                                display: line; margin-top: 0.5em; margin-bottom: 0.5em;
+                                margin-left: auto; margin-right: auto; border-width: 3px;
+                            }
+                        </style>
+                        <div class="page">
+                            <table class="table">
+                                <thead>
+                                    <tr style="text-align:left;background-color:#ffffff;">
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Transaction Date</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Transaction Reference</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Transaction Description</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Transaction Amount</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Approved Amount</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Paid to Date</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Discount Received</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Amount to be Paid</span></h5></div></td>
+                                        <td><div class="col-xs-1 transbox"><h5><span style="font-size :10pt;">Run Date</span></h5></div></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="total_grand_transaction_amount" t-value="0"/>
+                                    <t t-set="total_grand_approved_amount" t-value="0"/>
+                                    <t t-set="total_grand_paid_to_date" t-value="0"/>
+                                    <t t-set="total_grand_amt_tobe_paid" t-value="0"/>
+                                    <tr>
+                                        <t t-foreach="get_partner(o)" t-as="partner">
+                                            <td colspan="9" style="text-align:left;background-color:#ffffff;font-size :11pt;font-weight: bold;">
+                                                <span t-field="partner.name"/>
+                                                <span t-field="partner.branch_name_code"/>
+                                                <span t-field="partner.acc_no_ap"/>
+                                                <span t-field="partner.bank_financial_inst"/>
+                                            </td>
+                                            <t t-set="total_transaction_amount" t-value="0"/>
+                                            <t t-set="total_approved_amount" t-value="0"/>
+                                            <t t-set="total_paid_to_date" t-value="0"/>
+                                            <t t-set="total_amt_tobe_paid" t-value="0"/>
+                                            <tr>
+                                                <tr style="text-align:center;background-color:#ffffff;"
+                                                    t-foreach="get_partner_invoice_line(o,partner)" t-as="lines">
+                                                    <t t-set="total_transaction_amount" t-value="float(total_transaction_amount) + float(lines.invoice_id.amount_total)"/>
+                                                    <t t-set="total_approved_amount" t-value="float(total_approved_amount) + float(lines.pay_amount)"/>
+                                                    <t t-set="total_paid_to_date" t-value="float(total_paid_to_date) + float(get_total_pay_to_date(lines))"/>
+                                                    <t t-set="total_amt_tobe_paid" t-value="float(total_amt_tobe_paid) + float(get_total_amount_to_be_paid(lines))"/>
+                                                    <t t-set="total_grand_transaction_amount" t-value="float(total_grand_transaction_amount) + float(lines.invoice_id.amount_total)"/>
+                                                    <t t-set="total_grand_approved_amount" t-value="float(total_grand_approved_amount) + float(lines.pay_amount)"/>
+                                                    <t t-set="total_grand_paid_to_date" t-value="float(total_grand_paid_to_date) + float(get_total_pay_to_date(lines))"/>
+                                                    <t t-set="total_grand_amt_tobe_paid" t-value="float(total_grand_amt_tobe_paid) + float(get_total_amount_to_be_paid(lines))"/>
+                                                    <td><span t-field="o.payment_date"/></td>
+                                                    <td><span t-field='lines.invoice_id.ref'/></td>
+                                                    <td><span t-field='lines.number'/></td>
+                                                    <td>
+                                                        <span t-field="user.company_id.currency_id.symbol"/>
+                                                        <span t-out="'{0:,.2f}'.format(lines.invoice_id.amount_total)"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="user.company_id.currency_id.symbol"/>
+                                                        <span t-out="'{0:,.2f}'.format(lines.pay_amount)"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="user.company_id.currency_id.symbol"/>
+                                                        <span t-out="'{0:,.2f}'.format(get_total_pay_to_date(lines))"/>
+                                                    </td>
+                                                    <td><span>----------</span></td>
+                                                    <td>
+                                                        <span t-field="user.company_id.currency_id.symbol"/>
+                                                        <span t-out="'{0:,.2f}'.format(get_total_amount_to_be_paid(lines))"/>
+                                                    </td>
+                                                    <td><span t-field='o.run_date'/></td>
+                                                </tr>
+                                            </tr>
+                                            <tr>
+                                                <td><span></span></td>
+                                                <td><span></span></td>
+                                                <td><span></span></td>
+                                                <td style="text-align:center;">
+                                                    <span t-field="user.company_id.currency_id.symbol"/>
+                                                    <span t-out="'{0:,.2f}'.format(total_transaction_amount)"/>
+                                                </td>
+                                                <td style="text-align:center;">
+                                                    <span t-field="user.company_id.currency_id.symbol"/>
+                                                    <span t-out="'{0:,.2f}'.format(total_approved_amount)"/>
+                                                </td>
+                                                <td style="text-align:center;">
+                                                    <span t-field="user.company_id.currency_id.symbol"/>
+                                                    <span t-out="'{0:,.2f}'.format(total_paid_to_date)"/>
+                                                </td>
+                                                <td><span></span></td>
+                                                <td style="text-align:center;">
+                                                    <span t-field="user.company_id.currency_id.symbol"/>
+                                                    <span t-out="'{0:,.2f}'.format(total_amt_tobe_paid)"/>
+                                                </td>
+                                                <td><span></span></td>
+                                            </tr>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <td><span><strong>BATCH TOTAL</strong></span></td>
+                                        <td><span></span></td>
+                                        <td><span></span></td>
+                                        <td style="text-align:center;">
+                                            <span t-field="user.company_id.currency_id.symbol"/>
+                                            <span t-out="'{0:,.2f}'.format(total_grand_transaction_amount)"/>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span t-field="user.company_id.currency_id.symbol"/>
+                                            <span t-out="'{0:,.2f}'.format(total_grand_approved_amount)"/>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span t-field="user.company_id.currency_id.symbol"/>
+                                            <span t-out="'{0:,.2f}'.format(total_grand_paid_to_date)"/>
+                                        </td>
+                                        <td><span></span></td>
+                                        <td style="text-align:center;">
+                                            <span t-field="user.company_id.currency_id.symbol"/>
+                                            <span t-out="'{0:,.2f}'.format(total_grand_amt_tobe_paid)"/>
+                                        </td>
+                                        <td><span></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
 
-										<t t-foreach="get_partner(o)" t-as="partner">
-											<td colspan="9"
-												style="text-align:left;background-color:#ffffff;font-size :11pt;font-weight: bold;">
-												<span t-field="partner.name" />
-												<span t-field="partner.branch_name_code" />
-												<span t-field="partner.acc_no_ap" />
-												<span t-field="partner.bank_financial_inst" />
-											</td>
-											<t t-set="total_transaction_amount" t-value="0" />
-											<t t-set="total_approved_amount" t-value="0" />
-											<t t-set="total_paid_to_date" t-value="0" />
-											<t t-set="total_amt_tobe_paid" t-value="0" />
-											<tr>
-												<tr style="text-align:center;background-color:#ffffff;"
-													t-foreach="get_partner_invoice_line(o,partner)"
-													t-as="lines">
-													<t t-set="total_transaction_amount"
-														t-value="float(total_transaction_amount) + float(lines.invoice_id.amount_total)" />
-													<t t-set="total_approved_amount"
-														t-value="float(total_approved_amount) + float(lines.pay_amount)" />
-													<t t-set="total_paid_to_date"
-														t-value="float(total_paid_to_date) + float(get_total_pay_to_date(lines))" />
-													<t t-set="total_amt_tobe_paid"
-														t-value="float(total_amt_tobe_paid) + float(get_total_amount_to_be_paid(lines))" />
-													<t t-set="total_grand_transaction_amount"
-														t-value="float(total_grand_transaction_amount) + float(lines.invoice_id.amount_total)" />
-													<t t-set="total_grand_approved_amount"
-														t-value="float(total_grand_approved_amount) + float(lines.pay_amount)" />
-													<t t-set="total_grand_paid_to_date"
-														t-value="float(total_grand_paid_to_date) + float(get_total_pay_to_date(lines))" />
-													<t t-set="total_grand_amt_tobe_paid"
-														t-value="float(total_grand_amt_tobe_paid) + float(get_total_amount_to_be_paid(lines))" />
-													<td>
-														<span t-field="o.payment_date" />
-													</td>
-													<td>
-														<span t-field='lines.invoice_id.ref' />
-													</td>
-													<td>
-														<span t-field='lines.number' />
-													</td>
-													<td>
-														<span t-field="user.company_id.currency_id.symbol" />
-														<span
-															t-esc="'{0:,.2f}'.format(lines.invoice_id.amount_total)" />
-
-													</td>
-													<td>
-														<span t-field="user.company_id.currency_id.symbol" />
-														<span t-esc="'{0:,.2f}'.format(lines.pay_amount)" />
-													</td>
-													<td>
-														<span t-field="user.company_id.currency_id.symbol" />
-														<span
-															t-esc="'{0:,.2f}'.format(get_total_pay_to_date(lines))" />
-													</td>
-													<td>
-														<span>----------</span>
-													</td>
-													<td>
-														<span t-field="user.company_id.currency_id.symbol" />
-														<span
-															t-esc="'{0:,.2f}'.format(get_total_amount_to_be_paid(lines))" />
-													</td>
-													<td>
-														<span t-field='o.run_date' />
-													</td>
-												</tr>
-											</tr>
-											<tr>
-												<td>
-													<span></span>
-												</td>
-												<td>
-													<span></span>
-												</td>
-												<td>
-													<span></span>
-												</td>
-												<td style="text-align:center;">
-													<span t-field="user.company_id.currency_id.symbol" />
-													<span
-														t-esc="'{0:,.2f}'.format(total_transaction_amount)" />
-												</td>
-												<td style="text-align:center;">
-													<span t-field="user.company_id.currency_id.symbol" />
-													<span t-esc="'{0:,.2f}'.format(total_approved_amount)" />
-												</td>
-												<td style="text-align:center;">
-													<span t-field="user.company_id.currency_id.symbol" />
-													<span t-esc="'{0:,.2f}'.format(total_paid_to_date)" />
-												</td>
-												<td>
-													<span></span>
-												</td>
-												<td style="text-align:center;">
-													<span t-field="user.company_id.currency_id.symbol" />
-													<span t-esc="'{0:,.2f}'.format(total_amt_tobe_paid)" />
-												</td>
-												<td>
-													<span></span>
-												</td>
-											</tr>
-										</t>
-									</tr>
-									<tr>
-										<td>
-											<span>
-												<strong>BATCH TOTAL</strong>
-											</span>
-										</td>
-										<td>
-											<span></span>
-										</td>
-										<td>
-											<span></span>
-										</td>
-										<td style="text-align:center;">
-											<span t-field="user.company_id.currency_id.symbol" />
-											<span
-												t-esc="'{0:,.2f}'.format(total_grand_transaction_amount)" />
-										</td>
-										<td style="text-align:center;">
-											<span t-field="user.company_id.currency_id.symbol" />
-											<span
-												t-esc="'{0:,.2f}'.format(total_grand_approved_amount)" />
-										</td>
-										<td style="text-align:center;">
-											<span t-field="user.company_id.currency_id.symbol" />
-											<span
-												t-esc="'{0:,.2f}'.format(total_grand_paid_to_date)" />
-										</td>
-										<td>
-											<span></span>
-										</td>
-										<td style="text-align:center;">
-											<span t-field="user.company_id.currency_id.symbol" />
-											<span
-												t-esc="'{0:,.2f}'.format(total_grand_amt_tobe_paid)" />
-										</td>
-										<td>
-											<span></span>
-										</td>
-									</tr>
-
-
-
-
-								</tbody>
-								<!-- <tr style="text-align:left;background-color:#ffffff;font-size 
-									:11pt;font-weight: bold;"> <td> <span>partner name</span> </td> </tr> <tr 
-									style="text-align:center;background-color:#ffffff;"> <td> <span t-field="o.payment_date" 
-									/> </td> <td> <span t-field="o.run_date" /> </td> </tr> -->
-							</table>
-						</div>
-					</t>
-				</t>
-			</t>
-		</template>
-		<report id="action_ap_batch_payment"
-			model="ix.batch.payment.ap" string="Batch Payment"
-			report_type="qweb-pdf" name="batch_payment.report_ap_batch_payment_pdf"
-			file="batch_payment.report_ap_batch_payment_pdf" attachment_use="False" />
-		<!-- <table class="table table-bordered"> <tr id="t_headings"> <td><span>Transaction 
-			Date</span></td> <td><span>Transaction Reference</span></td> <td><span>Transaction 
-			Description</span></td> <td><span>Transaction Amount</span></td> <td><span>Paid 
-			to Date</span></td> <td><span>Discount Recieved</span></td> <td><span>Amount 
-			to be Paid</span></td> <td><span>Run Date</span></td> </tr> </table> -->
-	</data>
+        <record id="action_ap_batch_payment" model="ir.actions.report">
+            <field name="name">Batch Payment</field>
+            <field name="model">ix.batch.payment.ap</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_payment.report_ap_batch_payment_pdf</field>
+            <field name="report_file">batch_payment.report_ap_batch_payment_pdf</field>
+            <field name="attachment_use" eval="False"/>
+            <field name="binding_model_id" ref="model_ix_batch_payment_ap"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
 </odoo>

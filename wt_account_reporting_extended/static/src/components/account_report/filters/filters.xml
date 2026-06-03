@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <!--
+        Each of the patches below injects the "Sales Person" dropdown into a
+        derived filters template. We patch the base AccountReportFiltersCustomizable
+        plus every report-specific fork (Partner Ledger, Aged Partner Balance,
+        Journal, Sales, Multicurrency Revaluation, Deferred, Generic Tax) since
+        those reports register a custom_display.templates['AccountReportFilters']
+        mapping to their own template via `_get_custom_display_config`, and those
+        forks were created with t-inherit (snapshot) - not t-inherit-mode=extension -
+        so a single patch on the base would not reach them.
+    -->
+
+    <t t-name="wt_account_reporting_extended.AccountReportFiltersCustomizable"
+       t-inherit="account_reports.AccountReportFiltersCustomizable"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.PartnerLedgerFilters"
+       t-inherit="account_reports.PartnerLedgerFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.AgedPartnerBalanceFilters"
+       t-inherit="account_reports.AgedPartnerBalanceFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.JournalReportFilters"
+       t-inherit="account_reports.JournalReportFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.SalesReportFilters"
+       t-inherit="account_reports.SalesReportFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.MulticurrencyRevaluationReportFilters"
+       t-inherit="account_reports.MulticurrencyRevaluationReportFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.DeferredFilters"
+       t-inherit="account_reports.DeferredFilters"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="wt_account_reporting_extended.GenericTaxReportFiltersCustomizable"
+       t-inherit="account_reports.GenericTaxReportFiltersCustomizable"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="'account' in controller.options">
+                <div id="filter_account" class="filter_account">
+                    <t t-call="wt_account_reporting_extended.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

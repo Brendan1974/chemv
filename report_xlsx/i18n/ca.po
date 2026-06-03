@@ -17,12 +17,6 @@ msgstr ""
 "X-Generator: Weblate 4.3.2\n"
 
 #. module: report_xlsx
-#: code:addons/report_xlsx/models/ir_report.py:0
-#, python-format
-msgid "%s model was not found"
-msgstr "No s'ha trobat el model %s"
-
-#. module: report_xlsx
 #: model:ir.model,name:report_xlsx.model_report_report_xlsx_abstract
 msgid "Abstract XLSX Report"
 msgstr "Informe XLSX abstracte"
@@ -44,11 +38,13 @@ msgstr "Informe d'acció"
 
 #. module: report_xlsx
 #: model:ir.model.fields,field_description:report_xlsx.field_ir_actions_report__report_type
+#: model:ir.model.fields,field_description:report_xlsx.field_report_pdf_form__report_type
 msgid "Report Type"
 msgstr "Tipus d'informe"
 
 #. module: report_xlsx
 #: model:ir.model.fields,help:report_xlsx.field_ir_actions_report__report_type
+#: model:ir.model.fields,help:report_xlsx.field_report_pdf_form__report_type
 msgid ""
 "The type of the report that will be rendered, each one having its own "
 "rendering method. HTML means the report will be opened directly in your "
@@ -64,3 +60,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:report_xlsx.selection__ir_actions_report__report_type__xlsx
 msgid "XLSX"
 msgstr "XLSX"
+
+#, python-format
+#~ msgid "%s model was not found"
+#~ msgstr "No s'ha trobat el model %s"

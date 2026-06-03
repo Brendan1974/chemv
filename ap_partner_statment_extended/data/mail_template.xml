@@ -2,36 +2,33 @@
 <odoo>
     <data noupdate="1">
 
-		<record id="email_template_partner_statement" model="mail.template">
+        <record id="email_template_partner_statement" model="mail.template">
             <field name="name">Partners - Statements by Email</field>
-            <field name="email_from">{{object.company_id.email }}</field>
-            <field name="email_to">{{object.email }}</field>
+            <field name="email_from">{{ object.company_id.email }}</field>
+            <field name="email_to">{{ object.email }}</field>
             <field name="subject">Customer Statement</field>
             <field name="model_id" ref="base.model_res_partner"/>
             <field name="auto_delete" eval="False"/>
-            <field name="report_template" ref="partner_statement.action_print_activity_statement"/>
+            <field name="report_template_ids" eval="[(4, ref('partner_statement.action_print_activity_statement'))]"/>
             <field name="body_html" type="html">
                 <div>
                     <table border="0" width="100%" cellpadding="0" bgcolor="#ededed" style="padding: 20px; background-color: #ededed; border-collapse:separate;" summary="o_mail_notification">
                         <tbody>
-                            <!-- HEADER -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
                                         <tr>
                                             <td valign="middle">
                                                 <span style="font-size:20px; color:white; font-weight: bold;">
-
                                                 </span>
                                             </td>
                                             <td valign="middle" align="right">
-                                                <img src="/logo.png?company=${object.company_id.id}" style="padding: 0px; margin: 0px; height: auto; width: 80px;" alt="${object.company_id.name}"/>
+                                                <img t-attf-src="/logo.png?company={{ object.company_id.id }}" style="padding: 0px; margin: 0px; height: auto; width: 80px;" t-att-alt="object.company_id.name"/>
                                             </td>
                                         </tr>
-                                  </table>
+                                    </table>
                                 </td>
                             </tr>
-                          <!-- CONTENT -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#ffffff" style="min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px; border-collapse:separate;">
@@ -42,26 +39,20 @@
                                                 <br/>
                                                 <p>Regards,</p>
                                                 <br/>
-                                                <p t-out="object.company_id.name or ''" />
+                                                <p t-out="object.company_id.name or ''"/>
                                             </td>
                                         </tbody>
                                     </table>
                                 </td>
                             </tr>
-                            <!-- FOOTER -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
                                         <tr>
                                             <td valign="middle" align="left" style="color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;">
-                                            	<span t-out="object.company_id.name or ''"/><br/>
-                                            	<span t-out="object.company_id.phone or ''"/>
+                                                <span t-out="object.company_id.name or ''"/><br/>
+                                                <span t-out="object.company_id.phone or ''"/>
                                             </td>
-                                            <!-- <td valign="middle" align="right" style="color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;">
-                                                <a href="mailto:${object.company_id.email}" style="text-decoration:none; color: white;">${object.company_id.email}</a><br/>
-                                                <a href="${object.company_id.website}" style="text-decoration:none; color: white;">${object.company_id.website}
-                                                </a>
-                                            </td> -->
                                         </tr>
                                     </table>
                                 </td>
@@ -79,35 +70,31 @@
 
         <record id="email_template_partner_outstanding_statement" model="mail.template">
             <field name="name">Partners- Outstanding - Statements by Email</field>
-            <field name="email_from">{{object.company_id.email }}</field>
-            <field name="email_to">{{object.email }}</field>
+            <field name="email_from">{{ object.company_id.email }}</field>
+            <field name="email_to">{{ object.email }}</field>
             <field name="subject">Customer Outstanding Statement</field>
-            <field name="model_id" ref="partner_statement.model_res_partner"/>
+            <field name="model_id" ref="base.model_res_partner"/>
             <field name="auto_delete" eval="False"/>
-            <field name="report_template" 
-                ref="partner_statement.action_print_outstanding_statement"/>
+            <field name="report_template_ids" eval="[(4, ref('partner_statement.action_print_outstanding_statement'))]"/>
             <field name="body_html" type="html">
                 <div>
                     <table border="0" width="100%" cellpadding="0" bgcolor="#ededed" style="padding: 20px; background-color: #ededed; border-collapse:separate;" summary="o_mail_notification">
                         <tbody>
-                            <!-- HEADER -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
                                         <tr>
                                             <td valign="middle">
                                                 <span style="font-size:20px; color:white; font-weight: bold;">
-
                                                 </span>
                                             </td>
                                             <td valign="middle" align="right">
-                                                <img src="/logo.png?company=${object.company_id.id}" style="padding: 0px; margin: 0px; height: auto; width: 80px;" alt="${object.company_id.name}"/>
+                                                <img t-attf-src="/logo.png?company={{ object.company_id.id }}" style="padding: 0px; margin: 0px; height: auto; width: 80px;" t-att-alt="object.company_id.name"/>
                                             </td>
                                         </tr>
-                                  </table>
+                                    </table>
                                 </td>
                             </tr>
-                          <!-- CONTENT -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#ffffff" style="min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px; border-collapse:separate;">
@@ -118,13 +105,12 @@
                                                 <br/>
                                                 <p>Regards,</p>
                                                 <br/>
-                                                <p t-out="object.company_id.name or ''" />
+                                                <p t-out="object.company_id.name or ''"/>
                                             </td>
                                         </tbody>
                                     </table>
                                 </td>
                             </tr>
-                            <!-- FOOTER -->
                             <tr>
                                 <td align="center" style="min-width: 590px;">
                                     <table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
@@ -133,11 +119,6 @@
                                                 <span t-out="object.company_id.name or ''"/><br/>
                                                 <span t-out="object.company_id.phone or ''"/>
                                             </td>
-                                            <!-- <td valign="middle" align="right" style="color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;">
-                                                <a href="mailto:${object.company_id.email}" style="text-decoration:none; color: white;">${object.company_id.email}</a><br/>
-                                                <a href="${object.company_id.website}" style="text-decoration:none; color: white;">${object.company_id.website}
-                                                </a>
-                                            </td> -->
                                         </tr>
                                     </table>
                                 </td>

@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.tools import SQL
 
 
 class ResPartner(models.Model):
@@ -63,43 +64,46 @@ class ResPartner(models.Model):
 
     @api.depends_context('company')
     def _credit_debit_get(self):
-        tables, where_clause, where_params = self.env['account.move.line']._where_calc([
+        if not self.ids:
+            self.debit = False
+            self.credit = False
+            return
+
+        query = self.env['account.move.line']._where_calc([
             ('parent_state', '=', 'posted'),
             ('company_id', '=', self.env.company.id)
-        ]).get_sql()
-        where_params = [tuple(self.ids)] + where_params
-        if where_clause:
-            where_clause = 'AND ' + where_clause
-        recod = False
-        for record in self:
-            recod = record
-        if isinstance(recod.id, int):
-            self._cr.execute("""SELECT account_move_line.partner_id , a.account_type, SUM(account_move_line.amount_residual)
-                          FROM """ + tables + """
-                          LEFT JOIN account_account a ON (account_move_line.account_id=a.id)
-                          WHERE a.account_type IN ('asset_receivable','liability_payable')
-                          AND account_move_line.partner_id IN %s
-                          AND account_move_line.reconciled IS NOT TRUE
-                          """ + where_clause + """
-                          GROUP BY account_move_line.partner_id, a.account_type
-                          """, where_params)
-            treated = self.browse()
-            for pid, type, val in self._cr.fetchall():
-                partner = self.browse(pid)
-                if type == 'asset_receivable':
-                    partner.credit = val
-                    if partner not in treated:
-                        partner.debit = False
-                        treated |= partner
-                elif type == 'liability_payable':
-                    partner.debit = -val
-                    if partner not in treated:
-                        partner.credit = False
-                        treated |= partner
-            remaining = (self - treated)
-            remaining.debit = False
-            remaining.credit = False
-        else:
-            for rec in self:
-                rec.debit = False
-                rec.credit = False
+        ])
+        self.env['account.move.line'].flush_model(
+            ['account_id', 'amount_residual', 'company_id', 'parent_state', 'partner_id', 'reconciled']
+        )
+        self.env['account.account'].flush_model(['account_type'])
+        query = SQL("""
+            SELECT account_move_line.partner_id, a.account_type, SUM(account_move_line.amount_residual)
+            FROM %s
+            LEFT JOIN account_account a ON (account_move_line.account_id = a.id)
+            WHERE a.account_type IN ('asset_receivable', 'liability_payable')
+            AND account_move_line.partner_id IN %s
+            AND account_move_line.reconciled IS NOT TRUE
+            AND %s
+            GROUP BY account_move_line.partner_id, a.account_type
+            """,
+            query.from_clause,
+            tuple(self.ids),
+            query.where_clause or SQL("TRUE"),
+        )
+        treated = self.browse()
+        for partner_id, account_type, value in self.env.execute_query(query):
+            partner = self.browse(partner_id)
+            if account_type == 'asset_receivable':
+                partner.credit = value
+                if partner not in treated:
+                    partner.debit = False
+                    treated |= partner
+            elif account_type == 'liability_payable':
+                partner.debit = -value
+                if partner not in treated:
+                    partner.credit = False
+                    treated |= partner
+        remaining = self - treated
+        remaining.debit = False
+        remaining.credit = False
