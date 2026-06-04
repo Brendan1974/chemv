@@ -25,8 +25,8 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/inventory_adjustment.xml',
-        'wizard/stock_xlsx.xml',
+        # 'views/inventory_adjustment.xml',
+        # 'wizard/stock_xlsx.xml',
         ],
     
 

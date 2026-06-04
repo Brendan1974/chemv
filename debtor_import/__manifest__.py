@@ -10,11 +10,11 @@
     
     """,
        'data': [
-                'wizard/import_wizard.xml',
-                'wizard/account_view.xml',
-                'wizard/debtor_issue.xml',
-                'wizard/issue_partner.xml',
-                'security/ir.model.access.csv',
+                # 'wizard/import_wizard.xml',
+                # 'wizard/account_view.xml',
+                # 'wizard/debtor_issue.xml',
+                # 'wizard/issue_partner.xml',
+                # 'security/ir.model.access.csv',
         ],
        'qweb': [ 
            
