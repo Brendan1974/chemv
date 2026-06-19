@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="payment_method_payfast" model="account.payment.method">
+            <field name="name">Payfast</field>
+            <field name="code">payfast_73lines</field>
+            <field name="payment_type">inbound</field>
+        </record>
+    </data>
+</odoo>

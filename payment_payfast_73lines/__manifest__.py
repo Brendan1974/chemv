@@ -9,6 +9,7 @@
     'author': '73Lines (chemv v18 port)',
     'depends': ['payment'],
     'data': [
+        'data/payfast.xml',
         'views/payment_form_templates.xml',
         'views/payment_provider_views.xml',
         'data/payment_provider_data.xml',
