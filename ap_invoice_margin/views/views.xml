@@ -21,5 +21,36 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_order_form_sale_order_line_no_create" model="ir.ui.view">
+        <field name="name">sale.order.form.line.no.create</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id'][@widget='sol_product_many2one']" position="attributes">
+                <attribute name="options">{'no_open': True, 'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//field[@name='product_template_id']" position="attributes">
+                <attribute name="options">{'no_open': True, 'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//field[@name='product_id'][@widget='many2one_barcode']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_purchase_order_line_no_create" model="ir.ui.view">
+        <field name="name">purchase.order.form.line.no.create</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id'][@widget='product_label_section_and_note_field']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//field[@name='product_id'][@widget='many2one_barcode']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
   </data>
 </odoo>
